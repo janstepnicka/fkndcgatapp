@@ -30,7 +30,10 @@ export async function GET(req: NextRequest) {
   // const token = searchParams.get('hub.verify_token');
   const challenge = searchParams.get('hub.challenge');
 
-  return NextResponse.json(challenge, { status: 200 });
+  return new Response(challenge, {
+      status: 200,
+      headers: { 'Content-Type': 'text/plain' },
+    });
 
   // if (mode && token) {
   //   if (mode === 'subscribe' && token === VERIFY_TOKEN) {
