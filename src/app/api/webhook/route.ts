@@ -26,8 +26,8 @@ interface MessengerWebhookBody {
 // Handle GET request for webhook verification
 export async function GET(req: NextRequest) {
   const { searchParams } = new URL(req.url);
-  const mode = searchParams.get('hub.mode');
-  const token = searchParams.get('hub.verify_token');
+  // const mode = searchParams.get('hub.mode');
+  // const token = searchParams.get('hub.verify_token');
   const challenge = searchParams.get('hub.challenge');
 
   return NextResponse.json(challenge, { status: 200 });
