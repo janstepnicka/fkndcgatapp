@@ -1,10 +1,30 @@
+import type { NextApiRequest, NextApiResponse } from 'next';
 
-// pages/api/webhook.js
+// Type definitions for incoming data
+interface MessengerWebhookEntry {
+  id: string;
+  time: number;
+  messaging: Array<{
+    sender: { id: string };
+    recipient: { id: string };
+    timestamp: number;
+    message?: {
+      mid: string;
+      text: string;
+    };
+  }>;
+}
 
-export default function handler(req, res) {
+interface MessengerWebhookBody {
+  object: string;
+  entry: MessengerWebhookEntry[];
+}
+
+export default function handler(req: NextApiRequest, res: NextApiResponse) {
   if (req.method === 'GET') {
-    // Verify webhook subscription (Facebook will ping this URL when setting up the webhook)
-    const VERIFY_TOKEN = "mrdka"; // Store your token in env vars
+    // Webhook verification
+    const VERIFY_TOKEN = "mrdka";
+
     const mode = req.query['hub.mode'];
     const token = req.query['hub.verify_token'];
     const challenge = req.query['hub.challenge'];
@@ -12,27 +32,36 @@ export default function handler(req, res) {
     if (mode && token) {
       if (mode === 'subscribe' && token === VERIFY_TOKEN) {
         console.log('WEBHOOK VERIFIED');
-        res.status(200).send(challenge);
+        return res.status(200).send(challenge);
       } else {
-        res.status(403).end();
+        return res.status(403).end('Verification failed');
       }
     }
   } else if (req.method === 'POST') {
-    // Handle incoming messages from Facebook
-    const body = req.body;
+    // Handle incoming webhook events from Facebook Messenger
+    const body: MessengerWebhookBody = req.body;
 
     if (body.object === 'page') {
       body.entry.forEach((entry) => {
-        const webhookEvent = entry.messaging[0];
-        console.log('Incoming message:', webhookEvent);
+        const messagingEvent = entry.messaging[0];
+        console.log('Incoming message:', messagingEvent.message?.text);
 
-        // You can handle message events here, e.g., pin messages based on commands
+        // Here you can handle message events, e.g., store pinned messages
+        // or trigger an action when specific commands are detected
+        if (messagingEvent.message && messagingEvent.message.text === '/pin') {
+          // Logic for pinning the message
+          console.log('Pinning message:', messagingEvent.message.text);
+        }
       });
-      res.status(200).send('EVENT_RECEIVED');
+
+      // Return a '200 OK' response to Facebook
+      return res.status(200).send('EVENT_RECEIVED');
     } else {
-      res.status(404).end();
+      // Respond with a '404 Not Found' if the event isn't from a page subscription
+      return res.status(404).end();
     }
   } else {
-    res.status(405).end();
+    // Respond with '405 Method Not Allowed' for non-GET/POST requests
+    return res.status(405).end('Method Not Allowed');
   }
 }
