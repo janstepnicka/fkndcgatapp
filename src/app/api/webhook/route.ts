@@ -1,7 +1,7 @@
 import { NextRequest, NextResponse } from 'next/server';
 
 // Define environment variables
-const VERIFY_TOKEN = process.env.FB_VERIFY_TOKEN || 'mrdka';
+// const VERIFY_TOKEN = process.env.FB_VERIFY_TOKEN || 'mrdka';
 
 // Type definitions for incoming data
 interface MessengerWebhookEntry {
@@ -30,16 +30,18 @@ export async function GET(req: NextRequest) {
   const token = searchParams.get('hub.verify_token');
   const challenge = searchParams.get('hub.challenge');
 
-  if (mode && token) {
-    if (mode === 'subscribe' && token === VERIFY_TOKEN) {
-      console.log('WEBHOOK VERIFIED');
-      return NextResponse.json(challenge, { status: 200 });
-    } else {
-      return NextResponse.json({ message: 'Forbidden' }, { status: 403 });
-    }
-  }
+  return NextResponse.json(challenge, { status: 200 });
 
-  return NextResponse.json({ message: 'Bad Requesxcvxvct' }, { status: 400 });
+  // if (mode && token) {
+  //   if (mode === 'subscribe' && token === VERIFY_TOKEN) {
+  //     console.log('WEBHOOK VERIFIED');
+  //     return NextResponse.json(challenge, { status: 200 });
+  //   } else {
+  //     return NextResponse.json({ message: 'Forbidden' }, { status: 403 });
+  //   }
+  // }
+  //
+  // return NextResponse.json({ message: 'Bad Requesxcvxvct' }, { status: 400 });
 }
 
 // Handle POST request for incoming messages
