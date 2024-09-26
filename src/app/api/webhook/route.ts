@@ -1,7 +1,7 @@
 import { NextRequest, NextResponse } from 'next/server';
 
 // Define environment variables
-const VERIFY_TOKEN = process.env.FB_VERIFY_TOKEN || '';
+const VERIFY_TOKEN = process.env.FB_VERIFY_TOKEN || 'mrdka';
 
 // Type definitions for incoming data
 interface MessengerWebhookEntry {
